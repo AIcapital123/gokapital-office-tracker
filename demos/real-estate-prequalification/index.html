@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GoKapital Real Estate Loan Prequalification Demo" />
+  <title>GoKapital | Real Estate Loan Prequalification</title>
+  <style>
+    :root {
+      --navy: #123B63;
+      --blue: #1E73BE;
+      --orange: #F28C28;
+      --green: #7AC943;
+      --light-blue: #EAF3FA;
+      --page: #F4F6F8;
+      --border: #D9E1E8;
+      --text: #263746;
+      --muted: #66788A;
+      --white: #FFFFFF;
+      --danger: #B42318;
+      --danger-bg: #FEF3F2;
+      --shadow: 0 18px 48px rgba(18, 59, 99, 0.13);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(30,115,190,.09), transparent 28rem),
+        radial-gradient(circle at 90% 0%, rgba(122,201,67,.08), transparent 24rem),
+        var(--page);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .topbar {
+      width: min(940px, calc(100% - 28px));
+      margin: 18px auto 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .demo-badge {
+      background: #fff7ed;
+      color: #9a4a00;
+      border: 1px solid #fed7aa;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .lang-toggle {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--navy);
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(18,59,99,.08);
+    }
+    .lang-toggle:hover { border-color: var(--blue); }
+
+    .shell {
+      width: min(940px, calc(100% - 28px));
+      margin: 12px auto 42px;
+      background: var(--white);
+      border: 1px solid rgba(217,225,232,.9);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 34px 42px 26px;
+      text-align: center;
+      border-bottom: 1px solid #edf1f5;
+      background: linear-gradient(180deg, #fff 0%, #fbfdff 100%);
+    }
+
+    .logo {
+      width: min(250px, 72%);
+      height: auto;
+      display: block;
+      margin: 0 auto 18px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(28px, 4.4vw, 40px);
+      line-height: 1.12;
+      letter-spacing: -.025em;
+    }
+
+    .subtitle {
+      max-width: 690px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .notice {
+      max-width: 760px;
+      margin: 20px auto 0;
+      background: var(--light-blue);
+      border: 1px solid #cfe5f6;
+      border-left: 5px solid var(--blue);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: var(--navy);
+      text-align: left;
+      font-size: 14px;
+    }
+    .notice strong { display: block; margin-bottom: 2px; }
+
+    .progress-wrap {
+      padding: 24px 42px 0;
+      background: var(--white);
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      position: relative;
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #8492a1;
+      font-weight: 750;
+      font-size: 13px;
+      min-width: 0;
+    }
+    .step-indicator::after {
+      content: "";
+      height: 4px;
+      background: #e9eef3;
+      border-radius: 999px;
+      flex: 1;
+      min-width: 12px;
+    }
+    .step-indicator:last-child::after { display: none; }
+
+    .step-number {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      background: #edf1f5;
+      color: #6d7c8c;
+      font-size: 13px;
+    }
+
+    .step-indicator.active { color: var(--navy); }
+    .step-indicator.active .step-number {
+      background: var(--orange);
+      color: var(--white);
+      box-shadow: 0 0 0 4px rgba(242,140,40,.12);
+    }
+    .step-indicator.complete { color: var(--blue); }
+    .step-indicator.complete .step-number {
+      background: var(--green);
+      color: var(--white);
+    }
+    .step-indicator.complete::after { background: var(--green); }
+
+    form { padding: 26px 42px 34px; }
+
+    .page { display: none; animation: fade .24s ease; }
+    .page.active { display: block; }
+    @keyframes fade { from { opacity: .45; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    .section + .section { margin-top: 34px; }
+
+    .section-title {
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      color: var(--navy);
+      font-size: 22px;
+      line-height: 1.2;
+      border-bottom: 3px solid var(--orange);
+    }
+
+    .section-kicker {
+      margin: -8px 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 20px;
+    }
+
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .hidden { display: none !important; }
+
+    label, .field-label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--danger);
+    }
+
+    .help {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="file"],
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      color: var(--text);
+      padding: 11px 13px;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+
+    textarea { min-height: 112px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(30,115,190,.10);
+    }
+
+    input.invalid, select.invalid, textarea.invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(180,35,24,.09);
+    }
+
+    .money-wrap { position: relative; }
+    .money-wrap span {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #718195;
+      font-weight: 700;
+      pointer-events: none;
+    }
+    .money-wrap input { padding-left: 30px; }
+
+    .choice-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .choice-card { position: relative; }
+    .choice-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .choice-card label {
+      margin: 0;
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      padding: 16px;
+      transition: .18s ease;
+    }
+    .choice-card label:hover {
+      border-color: var(--blue);
+      transform: translateY(-1px);
+    }
+    .choice-card input:checked + label {
+      border-color: var(--green);
+      background: #f5fced;
+      box-shadow: 0 0 0 4px rgba(122,201,67,.11);
+      color: var(--navy);
+    }
+    .choice-icon {
+      width: 36px;
+      height: 36px;
+      color: var(--blue);
+    }
+    .choice-card input:checked + label .choice-icon { color: #4d9b1e; }
+
+    .inline-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .option {
+      position: relative;
+    }
+    .option input {
+      position: absolute;
+      opacity: 0;
+    }
+    .option label {
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      background: #fff;
+      transition: .16s ease;
+      font-weight: 700;
+    }
+    .option input:checked + label {
+      border-color: var(--green);
+      background: #f5fced;
+      box-shadow: 0 0 0 3px rgba(122,201,67,.1);
+      color: var(--navy);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+    .check {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+    .check input { margin-top: 3px; accent-color: var(--blue); }
+    .check label { margin: 0; font-weight: 650; cursor: pointer; }
+
+    .exclusion {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid #fecdca;
+      border-left: 5px solid var(--danger);
+      border-radius: 12px;
+      background: var(--danger-bg);
+      color: #7a271a;
+    }
+    .exclusion strong { display: block; margin-bottom: 5px; }
+
+    .conditional-section {
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #e8edf2;
+      border-radius: 14px;
+      background: #fbfcfe;
+    }
+    .conditional-section h3 {
+      margin: 0 0 16px;
+      color: var(--navy);
+      font-size: 17px;
+    }
+
+    .actions {
+      margin-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid #edf1f5;
+      padding-top: 22px;
+    }
+
+    .btn {
+      min-height: 48px;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 22px;
+      cursor: pointer;
+      font-weight: 850;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .btn-primary {
+      margin-left: auto;
+      color: #fff;
+      background: var(--orange);
+      box-shadow: 0 8px 20px rgba(242,140,40,.24);
+    }
+    .btn-secondary {
+      color: var(--navy);
+      background: #eef3f7;
+    }
+
+    .error-summary {
+      display: none;
+      margin: 0 0 20px;
+      padding: 13px 15px;
+      color: #7a271a;
+      background: var(--danger-bg);
+      border: 1px solid #fecdca;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .error-summary.visible { display: block; }
+
+    .confirmation {
+      display: none;
+      text-align: center;
+      padding: 54px 42px 62px;
+    }
+    .confirmation.visible { display: block; }
+    .success-icon {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #effbe6;
+      color: #4d9b1e;
+    }
+    .confirmation h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 30px;
+    }
+    .confirmation p {
+      max-width: 670px;
+      margin: 12px auto 0;
+      color: var(--muted);
+    }
+    .demo-note {
+      margin-top: 22px !important;
+      padding: 12px 14px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      color: #9a4a00 !important;
+      font-size: 13px;
+    }
+
+    .footer {
+      padding: 18px 28px;
+      background: var(--navy);
+      color: rgba(255,255,255,.82);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .topbar, .shell { width: min(100% - 18px, 940px); }
+      .topbar { margin-top: 10px; }
+      .header, .progress-wrap, form { padding-left: 20px; padding-right: 20px; }
+      .header { padding-top: 26px; }
+      .progress-wrap { overflow-x: auto; padding-bottom: 2px; }
+      .progress { min-width: 560px; }
+      .grid, .choice-cards, .checkbox-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .choice-card label { min-height: 92px; }
+      .conditional-section { padding: 16px; }
+      .actions { position: sticky; bottom: 0; background: #fff; z-index: 4; padding-bottom: 4px; }
+      .btn { flex: 1; padding-left: 14px; padding-right: 14px; }
+      .confirmation { padding-left: 22px; padding-right: 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="demo-badge" data-i18n="demoBadge">Interactive Demo</span>
+    <button class="lang-toggle" type="button" id="langToggle" aria-label="Cambiar idioma">Español</button>
+  </div>
+
+  <main class="shell">
+    <header class="header" id="formHeader">
+      <div style="font-weight:900;font-size:38px;letter-spacing:-1px;color:#123B63;margin-bottom:18px">go<span style="color:#7AC943">KAPITAL</span></div>
+      <h1 data-i18n="title">Real Estate Loan Prequalification</h1>
+      <p class="subtitle" data-i18n="subtitle">Complete this 1–2 minute form so our team can quickly assess the transaction and determine the best financing options.</p>
+      <div class="notice">
+        <strong data-i18n="noticeTitle">Investment and business-purpose properties only.</strong>
+        <span data-i18n="noticeText">GoKapital does not finance owner-occupied primary residences. No credit check or financial documents are required for this preliminary review.</span>
+      </div>
+    </header>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress">
+        <div class="step-indicator active" data-step-indicator="1"><span class="step-number">1</span><span data-i18n="progress1">Contact & Property</span></div>
+        <div class="step-indicator" data-step-indicator="2"><span class="step-number">2</span><span data-i18n="progress2">Deal Details</span></div>
+        <div class="step-indicator" data-step-indicator="3"><span class="step-number">3</span><span data-i18n="progress3">Borrower Snapshot</span></div>
+      </div>
+    </div>
+
+    <form id="loanForm" novalidate>
+      <div class="error-summary" id="errorSummary" role="alert" data-i18n="errorSummary">Please complete the required fields highlighted below.</div>
+
+      <section class="page active" data-page="1">
+        <div class="section">
+          <h2 class="section-title" data-i18n="contactTitle">Contact Information</h2>
+          <div class="field full">
+            <span class="field-label required" data-i18n="submitterLabel">I am the:</span>
+            <div class="choice-cards">
+              <div class="choice-card"><input type="radio" id="roleBorrower" name="submitterRole" value="borrower" required /><label for="roleBorrower"><svg class="choice-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20v-8l8-6 8 6v8h-5v-5H9v5H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="5" r="2.5" fill="white" stroke="currentColor" stroke-width="1.5"/></svg><span data-i18n="borrowerOption">Borrower or property investor</span></label></div>
+              <div class="choice-card"><input type="radio" id="roleBroker" name="submitterRole" value="broker" required /><label for="roleBroker"><svg class="choice-icon" viewBox="0 0 24 24" fill="none"><path d="M8 8V6.5A2.5 2.5 0 0 1 10.5 4h3A2.5 2.5 0 0 1 16 6.5V8M4 9h16v10H4V9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 13h16M10 13v2h4v-2" stroke="currentColor" stroke-width="1.8"/></svg><span data-i18n="brokerOption">Broker or referral partner</span></label></div>
+            </div>
+          </div>
+          <div class="grid" style="margin-top:18px">
+            <div class="field"><label class="required" for="fullName" data-i18n="fullName">Full Name</label><input id="fullName" type="text" required /></div>
+            <div class="field"><label for="companyName" data-i18n="companyName">Company Name</label><input id="companyName" type="text" /><p class="help" data-i18n="companyHelp">Optional for direct borrowers.</p></div>
+            <div class="field"><label class="required" for="email" data-i18n="email">Email</label><input id="email" type="email" required /></div>
+            <div class="field"><label class="required" for="phone" data-i18n="phone">Phone Number</label><input id="phone" type="tel" required /></div>
+            <div class="field full hidden" id="borrowerEntityWrap"><label class="required" for="borrowerEntity" data-i18n="borrowerEntity">Borrower or Entity Name</label><input id="borrowerEntity" type="text" /></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title" data-i18n="propertyTitle">Property Information</h2>
+          <div class="grid">
+            <div class="field full"><label class="required" for="propertyAddress" data-i18n="propertyAddress">Property Address or Location</label><input id="propertyAddress" type="text" required placeholder="Street address, city/state, or parcel number" data-i18n-placeholder="propertyPlaceholder" /><p class="help" data-i18n="propertyHelp">For land, enter a parcel number, city/state, or approximate location.</p></div>
+            <div class="field"><label class="required" for="propertyType" data-i18n="propertyType">Property Type</label><select id="propertyType" required><option value="" data-i18n="selectOption">Select an option</option><option value="residential-investment" data-i18n="ptResidential">Residential investment property, 1–4 units</option><option value="multifamily" data-i18n="ptMultifamily">Multifamily, 5 or more units</option><option value="mixed-use" data-i18n="ptMixed">Mixed-use</option><option value="retail" data-i18n="ptRetail">Retail</option><option value="office" data-i18n="ptOffice">Office</option><option value="industrial" data-i18n="ptIndustrial">Industrial or warehouse</option><option value="hospitality" data-i18n="ptHospitality">Hospitality</option><option value="land" data-i18n="ptLand">Land</option><option value="other" data-i18n="other">Other</option></select></div>
+            <div class="field hidden" id="otherPropertyWrap"><label class="required" for="otherPropertyType" data-i18n="otherPropertyType">Other Property Type</label><input id="otherPropertyType" type="text" /></div>
+            <div class="field"><label class="required" for="loanPurpose" data-i18n="loanPurpose">Loan Purpose</label><select id="loanPurpose" required><option value="" data-i18n="selectOption">Select an option</option><option value="purchase" data-i18n="lpPurchase">Purchase</option><option value="refinance" data-i18n="lpRefinance">Refinance / Cash-out refinance</option><option value="fix-flip" data-i18n="lpFixFlip">Fix and flip</option><option value="construction" data-i18n="lpConstruction">Construction or major renovation</option><option value="rental" data-i18n="lpRental">Rental or DSCR loan</option><option value="bridge" data-i18n="lpBridge">Hard Money Bridge loan</option><option value="land" data-i18n="lpLand">Land loan</option><option value="other" data-i18n="other">Other</option></select></div>
+            <div class="field hidden" id="otherLoanWrap"><label class="required" for="otherLoanPurpose" data-i18n="otherLoanPurpose">Other Loan Purpose</label><input id="otherLoanPurpose" type="text" /></div>
+            <div class="field full"><span class="field-label required" data-i18n="primaryResidence">Will the borrower occupy this property as a primary residence?</span><div class="inline-options"><div class="option"><input type="radio" id="primaryNo" name="primaryResidence" value="no" required /><label for="primaryNo" data-i18n="no">No</label></div><div class="option"><input type="radio" id="primaryYes" name="primaryResidence" value="yes" required /><label for="primaryYes" data-i18n="yes">Yes</label></div></div><div class="exclusion hidden" id="primaryExclusion"><strong data-i18n="outsideProgram">This request is outside our program.</strong><span data-i18n="primaryMessage">GoKapital does not finance owner-occupied primary residences. We provide financing for business-purpose and investment real estate only.</span></div></div>
+          </div>
+        </div>
+        <div class="actions"><span></span><button class="btn btn-primary" type="button" data-next="2" data-i18n="continue">Continue</button></div>
+      </section>
+
+      <section class="page" data-page="2">
+        <div class="section">
+          <h2 class="section-title" data-i18n="dealTitle">Deal Details</h2>
+          <p class="section-kicker" data-i18n="dealIntro">Enter the core numbers. Only fields relevant to the selected loan purpose are shown.</p>
+          <div class="grid"><div class="field full"><label class="required" for="requestedLoan" data-i18n="requestedLoan">Requested Loan Amount</label><div class="money-wrap"><span>$</span><input id="requestedLoan" type="number" min="0" step="1" required /></div></div></div>
+          <div id="dealSections">
+            <div class="conditional-section hidden" data-purpose-section="purchase"><h3 data-i18n="purchaseDetails">Purchase Details</h3><div class="grid"><div class="field"><label class="required" for="purchasePrice" data-i18n="purchasePrice">Purchase Price</label><div class="money-wrap"><span>$</span><input id="purchasePrice" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="purchaseCash" data-i18n="purchaseCash">Cash Available for Down Payment and Closing</label><div class="money-wrap"><span>$</span><input id="purchaseCash" type="number" min="0" data-required-when-visible /></div></div><div class="field full"><span class="field-label" data-i18n="underContract">Is the Property Under Contract?</span><div class="inline-options"><div class="option"><input type="radio" id="contractYes" name="underContract" value="yes" /><label for="contractYes" data-i18n="yes">Yes</label></div><div class="option"><input type="radio" id="contractNo" name="underContract" value="no" /><label for="contractNo" data-i18n="no">No</label></div></div></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="refinance"><h3 data-i18n="refinanceDetails">Refinance Details</h3><div class="grid"><div class="field"><label class="required" for="currentValue" data-i18n="currentValue">Estimated Current Property Value</label><div class="money-wrap"><span>$</span><input id="currentValue" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="amountOwedRefi" data-i18n="amountOwedTotal">Total Amount Currently Owed Against the Property</label><div class="money-wrap"><span>$</span><input id="amountOwedRefi" type="number" min="0" data-required-when-visible /></div><p class="help" data-i18n="owedHelp">Include mortgages, delinquent taxes, liens, judgments, and other property-related debt.</p></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="fix-flip"><h3 data-i18n="fixFlipDetails">Fix and Flip Details</h3><div class="grid"><div class="field"><label class="required" for="flipBasis" data-i18n="purchaseOrValue">Purchase Price or Current Value</label><div class="money-wrap"><span>$</span><input id="flipBasis" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="renoBudget" data-i18n="renoBudget">Renovation Budget</label><div class="money-wrap"><span>$</span><input id="renoBudget" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="arv" data-i18n="arv">Estimated After-Repair Value</label><div class="money-wrap"><span>$</span><input id="arv" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="projectCash" data-i18n="projectCash">Cash Available for the Project</label><div class="money-wrap"><span>$</span><input id="projectCash" type="number" min="0" data-required-when-visible /></div></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="construction"><h3 data-i18n="constructionDetails">Construction or Major Renovation Details</h3><div class="grid"><div class="field"><label class="required" for="constructionValue" data-i18n="landPropertyValue">Current Land or Property Value</label><div class="money-wrap"><span>$</span><input id="constructionValue" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="constructionOwed" data-i18n="amountOwed">Amount Currently Owed</label><div class="money-wrap"><span>$</span><input id="constructionOwed" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label for="remainingBudget" data-i18n="remainingBudget">Remaining Construction or Renovation Budget</label><div class="money-wrap"><span>$</span><input id="remainingBudget" type="number" min="0" /></div></div><div class="field"><label for="completedValue" data-i18n="completedValue">Estimated Completed Value</label><div class="money-wrap"><span>$</span><input id="completedValue" type="number" min="0" /></div></div><div class="field full"><label for="cashInvested" data-i18n="cashInvested">Cash Already Invested</label><div class="money-wrap"><span>$</span><input id="cashInvested" type="number" min="0" /></div></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="rental"><h3 data-i18n="rentalDetails">Rental or DSCR Details</h3><div class="grid"><div class="field"><label class="required" for="rentalValue" data-i18n="purchaseOrValue">Purchase Price or Current Value</label><div class="money-wrap"><span>$</span><input id="rentalValue" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label for="monthlyRent" data-i18n="monthlyRent">Current or Projected Monthly Rent</label><div class="money-wrap"><span>$</span><input id="monthlyRent" type="number" min="0" /></div></div><div class="field full"><label for="monthlyExpenses" data-i18n="monthlyExpenses">Estimated Monthly Property Expenses</label><div class="money-wrap"><span>$</span><input id="monthlyExpenses" type="number" min="0" /></div><p class="help" data-i18n="expensesHelp">Include taxes, insurance, HOA, and other recurring property expenses.</p></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="bridge"><h3 data-i18n="bridgeDetails">Hard Money Bridge Details</h3><div class="grid"><div class="field"><label class="required" for="bridgeValue" data-i18n="purchaseOrValue">Purchase Price or Current Value</label><div class="money-wrap"><span>$</span><input id="bridgeValue" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="bridgeOwed" data-i18n="amountOwed">Amount Currently Owed</label><div class="money-wrap"><span>$</span><input id="bridgeOwed" type="number" min="0" data-required-when-visible /></div></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="land"><h3 data-i18n="landDetails">Land Loan Details</h3><div class="grid"><div class="field"><label class="required" for="landValue" data-i18n="purchaseOrValue">Purchase Price or Current Value</label><div class="money-wrap"><span>$</span><input id="landValue" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="landCash" data-i18n="landCash">Cash Available for the Transaction</label><div class="money-wrap"><span>$</span><input id="landCash" type="number" min="0" data-required-when-visible /></div></div><div class="field full"><label class="required" for="landUse" data-i18n="landUse">Intended Use of the Land</label><input id="landUse" type="text" data-required-when-visible /></div></div></div>
+            <div class="conditional-section hidden" data-purpose-section="other"><h3 data-i18n="otherDetails">Other Loan Details</h3><div class="grid"><div class="field"><label class="required" for="otherValue" data-i18n="estimatedValue">Estimated Property Value</label><div class="money-wrap"><span>$</span><input id="otherValue" type="number" min="0" data-required-when-visible /></div></div><div class="field"><label class="required" for="briefPurpose" data-i18n="briefPurpose">Brief Loan Purpose</label><input id="briefPurpose" type="text" data-required-when-visible /></div></div></div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn btn-secondary" type="button" data-back="1" data-i18n="back">Back</button><button class="btn btn-primary" type="button" data-next="3" data-i18n="continue">Continue</button></div>
+      </section>
+
+      <section class="page" data-page="3">
+        <div class="section">
+          <h2 class="section-title" data-i18n="borrowerTitle">Borrower Snapshot</h2>
+          <p class="section-kicker" data-i18n="borrowerIntro">A few final details help us determine whether it makes sense to request a full package.</p>
+          <div class="grid">
+            <div class="field"><label class="required" for="creditScore" data-i18n="creditScore">Estimated Credit Score</label><select id="creditScore" required><option value="" data-i18n="selectOption">Select an option</option><option value="below-600" data-i18n="credit1">Below 600</option><option>600–639</option><option>640–679</option><option>680–719</option><option data-i18n="credit5">720 or higher</option><option data-i18n="unknown">Unknown</option></select></div>
+            <div class="field"><label class="required" for="liquidAssets" data-i18n="liquidAssets">Available Liquid Assets</label><select id="liquidAssets" required><option value="" data-i18n="selectOption">Select an option</option><option data-i18n="liq1">Below $25,000</option><option>$25,000–$49,999</option><option>$50,000–$99,999</option><option>$100,000–$249,999</option><option>$250,000–$499,999</option><option data-i18n="liq6">$500,000 or more</option><option data-i18n="unknown">Unknown</option></select></div>
+            <div class="field" id="generalExperienceWrap"><label class="required" for="generalExperience" data-i18n="generalExperience">Investment Properties or Similar Projects Completed During the Last 36 Months</label><select id="generalExperience"><option value="" data-i18n="selectOption">Select an option</option><option data-i18n="none">None</option><option>1</option><option>2–4</option><option>5–9</option><option data-i18n="tenMore">10 or more</option></select></div>
+            <div class="field hidden" id="constructionExperienceWrap"><label class="required" for="constructionExperience" data-i18n="constructionExperience">Similar Renovation or Construction Projects Completed During the Last 36 Months</label><select id="constructionExperience"><option value="" data-i18n="selectOption">Select an option</option><option data-i18n="none">None</option><option>1</option><option>2–4</option><option>5–9</option><option data-i18n="tenMore">10 or more</option></select></div>
+            <div class="field"><label class="required" for="ownership" data-i18n="ownership">Ownership at Closing</label><select id="ownership" required><option value="" data-i18n="selectOption">Select an option</option><option data-i18n="ownEntity">LLC or corporation</option><option data-i18n="ownIndividual">Individual name</option><option data-i18n="ownForm">Entity will be created</option><option data-i18n="notSure">Not sure</option></select></div>
+            <div class="field full"><span class="field-label required" data-i18n="closingTime">When Does the Loan Need to Close?</span><div class="inline-options"><div class="option"><input id="close1" type="radio" name="closingTime" required /><label for="close1" data-i18n="close1">Within 7 days</label></div><div class="option"><input id="close2" type="radio" name="closingTime" /><label for="close2" data-i18n="close2">8–14 days</label></div><div class="option"><input id="close3" type="radio" name="closingTime" /><label for="close3" data-i18n="close3">15–30 days</label></div><div class="option"><input id="close4" type="radio" name="closingTime" /><label for="close4" data-i18n="close4">More than 30 days</label></div><div class="option"><input id="close5" type="radio" name="closingTime" /><label for="close5" data-i18n="close5">No specific deadline</label></div></div></div>
+            <div class="field full"><span class="field-label" data-i18n="knownIssues">Known Property or Borrower Issues</span><div class="checkbox-grid" id="issuesGrid"><div class="check"><input id="issue1" type="checkbox" name="issues" /><label for="issue1" data-i18n="issue1">Foreclosure</label></div><div class="check"><input id="issue2" type="checkbox" name="issues" /><label for="issue2" data-i18n="issue2">Delinquent property taxes</label></div><div class="check"><input id="issue3" type="checkbox" name="issues" /><label for="issue3" data-i18n="issue3">Bankruptcy</label></div><div class="check"><input id="issue4" type="checkbox" name="issues" /><label for="issue4" data-i18n="issue4">Significant liens or judgments</label></div><div class="check"><input id="issue5" type="checkbox" name="issues" /><label for="issue5" data-i18n="issue5">Title or ownership dispute</label></div><div class="check"><input id="issue6" type="checkbox" name="issues" /><label for="issue6" data-i18n="issue6">Major code violations</label></div><div class="check"><input id="issueNone" type="checkbox" name="issues" /><label for="issueNone" data-i18n="none">None</label></div><div class="check"><input id="issueUnknown" type="checkbox" name="issues" /><label for="issueUnknown" data-i18n="notSure">Not sure</label></div></div><p class="help" data-i18n="issuesHelp">Select all that apply. “None” cannot be combined with another selection.</p></div>
+            <div class="field full"><label for="additionalDetails" data-i18n="additionalDetails">Additional Details</label><textarea id="additionalDetails" maxlength="500"></textarea><p class="help"><span data-i18n="detailsHelp">Briefly include anything important about the property, transaction, or closing deadline.</span> <span id="charCount">0/500</span></p></div>
+            <div class="field full"><label for="supportingDocument" data-i18n="supportingDocument">Supporting Document</label><input id="supportingDocument" type="file" accept=".pdf,image/*" /><p class="help" data-i18n="documentHelp">Optional: purchase contract, payoff statement, appraisal, property summary, or renovation budget.</p></div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn btn-secondary" type="button" data-back="2" data-i18n="back">Back</button><button class="btn btn-primary" type="submit" data-i18n="submit">Submit for Preliminary Review</button></div>
+      </section>
+    </form>
+
+    <section class="confirmation" id="confirmation"><div class="success-icon"><svg viewBox="0 0 24 24" width="38" height="38" fill="none"><path d="m6 12 4 4 8-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h2 data-i18n="confirmationTitle">Request Received</h2><p data-i18n="confirmationText">Thank you. We received your preliminary real estate financing request. A GoKapital specialist will review the information and contact you if the scenario appears potentially financeable or if additional details are required.</p><p><strong data-i18n="confirmationDisclaimer">This submission is for preliminary review only and is not an approval, loan commitment, or guarantee of financing.</strong></p><p class="demo-note" data-i18n="demoSubmission">Demo mode: no information was transmitted or stored.</p><button type="button" class="btn btn-secondary" id="restartBtn" style="margin-top:22px" data-i18n="restart">Start Over</button></section>
+    <footer class="footer"><span data-i18n="footer">© GoKapital, Inc. — Interactive form demonstration</span></footer>
+  </main>
+
+  <script>
+    const translations={en:{demoBadge:"Interactive Demo",title:"Real Estate Loan Prequalification",subtitle:"Complete this 1–2 minute form so our team can quickly assess the transaction and determine the best financing options.",noticeTitle:"Investment and business-purpose properties only.",noticeText:"GoKapital does not finance owner-occupied primary residences. No credit check or financial documents are required for this preliminary review.",progress1:"Contact & Property",progress2:"Deal Details",progress3:"Borrower Snapshot",errorSummary:"Please complete the required fields highlighted below.",contactTitle:"Contact Information",submitterLabel:"I am the:",borrowerOption:"Borrower or property investor",brokerOption:"Broker or referral partner",fullName:"Full Name",companyName:"Company Name",companyHelp:"Optional for direct borrowers.",email:"Email",phone:"Phone Number",borrowerEntity:"Borrower or Entity Name",propertyTitle:"Property Information",propertyAddress:"Property Address or Location",propertyPlaceholder:"Street address, city/state, or parcel number",propertyHelp:"For land, enter a parcel number, city/state, or approximate location.",propertyType:"Property Type",selectOption:"Select an option",ptResidential:"Residential investment property, 1–4 units",ptMultifamily:"Multifamily, 5 or more units",ptMixed:"Mixed-use",ptRetail:"Retail",ptOffice:"Office",ptIndustrial:"Industrial or warehouse",ptHospitality:"Hospitality",ptLand:"Land",other:"Other",otherPropertyType:"Other Property Type",loanPurpose:"Loan Purpose",lpPurchase:"Purchase",lpRefinance:"Refinance / Cash-out refinance",lpFixFlip:"Fix and flip",lpConstruction:"Construction or major renovation",lpRental:"Rental or DSCR loan",lpBridge:"Hard Money Bridge loan",lpLand:"Land loan",otherLoanPurpose:"Other Loan Purpose",primaryResidence:"Will the borrower occupy this property as a primary residence?",no:"No",yes:"Yes",outsideProgram:"This request is outside our program.",primaryMessage:"GoKapital does not finance owner-occupied primary residences. We provide financing for business-purpose and investment real estate only.",continue:"Continue",back:"Back",dealTitle:"Deal Details",dealIntro:"Enter the core numbers. Only fields relevant to the selected loan purpose are shown.",requestedLoan:"Requested Loan Amount",purchaseDetails:"Purchase Details",purchasePrice:"Purchase Price",purchaseCash:"Cash Available for Down Payment and Closing",underContract:"Is the Property Under Contract?",refinanceDetails:"Refinance Details",currentValue:"Estimated Current Property Value",amountOwedTotal:"Total Amount Currently Owed Against the Property",owedHelp:"Include mortgages, delinquent taxes, liens, judgments, and other property-related debt.",fixFlipDetails:"Fix and Flip Details",purchaseOrValue:"Purchase Price or Current Value",renoBudget:"Renovation Budget",arv:"Estimated After-Repair Value",projectCash:"Cash Available for the Project",constructionDetails:"Construction or Major Renovation Details",landPropertyValue:"Current Land or Property Value",amountOwed:"Amount Currently Owed",remainingBudget:"Remaining Construction or Renovation Budget",completedValue:"Estimated Completed Value",cashInvested:"Cash Already Invested",rentalDetails:"Rental or DSCR Details",monthlyRent:"Current or Projected Monthly Rent",monthlyExpenses:"Estimated Monthly Property Expenses",expensesHelp:"Include taxes, insurance, HOA, and other recurring property expenses.",bridgeDetails:"Hard Money Bridge Details",landDetails:"Land Loan Details",landCash:"Cash Available for the Transaction",landUse:"Intended Use of the Land",otherDetails:"Other Loan Details",estimatedValue:"Estimated Property Value",briefPurpose:"Brief Loan Purpose",borrowerTitle:"Borrower Snapshot",borrowerIntro:"A few final details help us determine whether it makes sense to request a full package.",creditScore:"Estimated Credit Score",credit1:"Below 600",credit5:"720 or higher",unknown:"Unknown",liquidAssets:"Available Liquid Assets",liq1:"Below $25,000",liq6:"$500,000 or more",generalExperience:"Investment Properties or Similar Projects Completed During the Last 36 Months",constructionExperience:"Similar Renovation or Construction Projects Completed During the Last 36 Months",none:"None",tenMore:"10 or more",ownership:"Ownership at Closing",ownEntity:"LLC or corporation",ownIndividual:"Individual name",ownForm:"Entity will be created",notSure:"Not sure",closingTime:"When Does the Loan Need to Close?",close1:"Within 7 days",close2:"8–14 days",close3:"15–30 days",close4:"More than 30 days",close5:"No specific deadline",knownIssues:"Known Property or Borrower Issues",issue1:"Foreclosure",issue2:"Delinquent property taxes",issue3:"Bankruptcy",issue4:"Significant liens or judgments",issue5:"Title or ownership dispute",issue6:"Major code violations",issuesHelp:"Select all that apply. “None” cannot be combined with another selection.",additionalDetails:"Additional Details",detailsHelp:"Briefly include anything important about the property, transaction, or closing deadline.",supportingDocument:"Supporting Document",documentHelp:"Optional: purchase contract, payoff statement, appraisal, property summary, or renovation budget.",submit:"Submit for Preliminary Review",confirmationTitle:"Request Received",confirmationText:"Thank you. We received your preliminary real estate financing request. A GoKapital specialist will review the information and contact you if the scenario appears potentially financeable or if additional details are required.",confirmationDisclaimer:"This submission is for preliminary review only and is not an approval, loan commitment, or guarantee of financing.",demoSubmission:"Demo mode: no information was transmitted or stored.",restart:"Start Over",footer:"© GoKapital, Inc. — Interactive form demonstration"},es:{demoBadge:"Demostración interactiva",title:"Precalificación de Préstamo Inmobiliario",subtitle:"Complete este formulario de 1–2 minutos para que nuestro equipo pueda evaluar rápidamente la transacción y determinar las mejores opciones de financiamiento.",noticeTitle:"Solo propiedades de inversión y de propósito comercial.",noticeText:"GoKapital no financia residencias principales ocupadas por el propietario. No se requiere verificación de crédito ni documentos financieros para esta revisión preliminar.",progress1:"Contacto y Propiedad",progress2:"Detalles del Negocio",progress3:"Perfil del Prestatario",errorSummary:"Complete los campos obligatorios resaltados a continuación.",contactTitle:"Información de Contacto",submitterLabel:"Soy:",borrowerOption:"Prestatario o inversionista inmobiliario",brokerOption:"Corredor o socio de referidos",fullName:"Nombre Completo",companyName:"Nombre de la Empresa",companyHelp:"Opcional para prestatarios directos.",email:"Correo Electrónico",phone:"Número de Teléfono",borrowerEntity:"Nombre del Prestatario o Entidad",propertyTitle:"Información de la Propiedad",propertyAddress:"Dirección o Ubicación de la Propiedad",propertyPlaceholder:"Dirección, ciudad/estado o número de parcela",propertyHelp:"Para terrenos, ingrese el número de parcela, ciudad/estado o ubicación aproximada.",propertyType:"Tipo de Propiedad",selectOption:"Seleccione una opción",ptResidential:"Propiedad residencial de inversión, 1–4 unidades",ptMultifamily:"Multifamiliar, 5 unidades o más",ptMixed:"Uso mixto",ptRetail:"Comercio minorista",ptOffice:"Oficina",ptIndustrial:"Industrial o almacén",ptHospitality:"Hotelería",ptLand:"Terreno",other:"Otro",otherPropertyType:"Otro Tipo de Propiedad",loanPurpose:"Propósito del Préstamo",lpPurchase:"Compra",lpRefinance:"Refinanciamiento / Retiro de efectivo",lpFixFlip:"Compra, renovación y venta",lpConstruction:"Construcción o renovación mayor",lpRental:"Préstamo para alquiler o DSCR",lpBridge:"Préstamo puente de dinero privado",lpLand:"Préstamo para terreno",otherLoanPurpose:"Otro Propósito del Préstamo",primaryResidence:"¿El prestatario ocupará esta propiedad como residencia principal?",no:"No",yes:"Sí",outsideProgram:"Esta solicitud está fuera de nuestro programa.",primaryMessage:"GoKapital no financia residencias principales ocupadas por el propietario. Ofrecemos financiamiento únicamente para propiedades de inversión y de propósito comercial.",continue:"Continuar",back:"Atrás",dealTitle:"Detalles del Negocio",dealIntro:"Ingrese las cifras principales. Solo se muestran los campos correspondientes al propósito seleccionado.",requestedLoan:"Monto de Préstamo Solicitado",purchaseDetails:"Detalles de la Compra",purchasePrice:"Precio de Compra",purchaseCash:"Efectivo Disponible para Inicial y Cierre",underContract:"¿La Propiedad Está Bajo Contrato?",refinanceDetails:"Detalles del Refinanciamiento",currentValue:"Valor Actual Estimado de la Propiedad",amountOwedTotal:"Monto Total Adeudado sobre la Propiedad",owedHelp:"Incluya hipotecas, impuestos morosos, gravámenes, sentencias y otras deudas relacionadas con la propiedad.",fixFlipDetails:"Detalles de Compra, Renovación y Venta",purchaseOrValue:"Precio de Compra o Valor Actual",renoBudget:"Presupuesto de Renovación",arv:"Valor Estimado Después de la Renovación",projectCash:"Efectivo Disponible para el Proyecto",constructionDetails:"Detalles de Construcción o Renovación Mayor",landPropertyValue:"Valor Actual del Terreno o Propiedad",amountOwed:"Monto Actualmente Adeudado",remainingBudget:"Presupuesto Restante de Construcción o Renovación",completedValue:"Valor Estimado al Completar",cashInvested:"Efectivo Ya Invertido",rentalDetails:"Detalles de Alquiler o DSCR",monthlyRent:"Alquiler Mensual Actual o Proyectado",monthlyExpenses:"Gastos Mensuales Estimados de la Propiedad",expensesHelp:"Incluya impuestos, seguro, asociación y otros gastos recurrentes de la propiedad.",bridgeDetails:"Detalles del Préstamo Puente",landDetails:"Detalles del Préstamo para Terreno",landCash:"Efectivo Disponible para la Transacción",landUse:"Uso Previsto del Terreno",otherDetails:"Otros Detalles del Préstamo",estimatedValue:"Valor Estimado de la Propiedad",briefPurpose:"Breve Propósito del Préstamo",borrowerTitle:"Perfil del Prestatario",borrowerIntro:"Estos últimos datos nos ayudan a determinar si vale la pena solicitar el paquete completo.",creditScore:"Puntaje de Crédito Estimado",credit1:"Menos de 600",credit5:"720 o más",unknown:"Desconocido",liquidAssets:"Activos Líquidos Disponibles",liq1:"Menos de $25,000",liq6:"$500,000 o más",generalExperience:"Propiedades de Inversión o Proyectos Similares Completados en los Últimos 36 Meses",constructionExperience:"Proyectos Similares de Renovación o Construcción Completados en los Últimos 36 Meses",none:"Ninguno",tenMore:"10 o más",ownership:"Titularidad al Cierre",ownEntity:"LLC o corporación",ownIndividual:"A nombre individual",ownForm:"Se creará una entidad",notSure:"No estoy seguro",closingTime:"¿Cuándo Debe Cerrar el Préstamo?",close1:"Dentro de 7 días",close2:"8–14 días",close3:"15–30 días",close4:"Más de 30 días",close5:"Sin fecha límite específica",knownIssues:"Problemas Conocidos de la Propiedad o del Prestatario",issue1:"Ejecución hipotecaria",issue2:"Impuestos de propiedad morosos",issue3:"Bancarrota",issue4:"Gravámenes o sentencias importantes",issue5:"Disputa de título o propiedad",issue6:"Violaciones graves de código",issuesHelp:"Seleccione todos los que correspondan. “Ninguno” no puede combinarse con otra selección.",additionalDetails:"Detalles Adicionales",detailsHelp:"Incluya brevemente cualquier dato importante sobre la propiedad, la transacción o la fecha de cierre.",supportingDocument:"Documento de Respaldo",documentHelp:"Opcional: contrato de compra, estado de saldo, tasación, resumen de la propiedad o presupuesto de renovación.",submit:"Enviar para Revisión Preliminar",confirmationTitle:"Solicitud Recibida",confirmationText:"Gracias. Recibimos su solicitud preliminar de financiamiento inmobiliario. Un especialista de GoKapital revisará la información y se comunicará con usted si la transacción parece potencialmente financiable o si se requieren datos adicionales.",confirmationDisclaimer:"Este envío es únicamente para revisión preliminar y no constituye una aprobación, compromiso de préstamo ni garantía de financiamiento.",demoSubmission:"Modo de demostración: no se transmitió ni almacenó información.",restart:"Comenzar de Nuevo",footer:"© GoKapital, Inc. — Demostración interactiva del formulario"}};
+    let currentLang="en",currentPage=1;
+    const form=document.getElementById("loanForm"),pages=[...document.querySelectorAll(".page")],indicators=[...document.querySelectorAll(".step-indicator")],errorSummary=document.getElementById("errorSummary"),borrowerEntityWrap=document.getElementById("borrowerEntityWrap"),borrowerEntity=document.getElementById("borrowerEntity"),propertyType=document.getElementById("propertyType"),otherPropertyWrap=document.getElementById("otherPropertyWrap"),otherPropertyType=document.getElementById("otherPropertyType"),loanPurpose=document.getElementById("loanPurpose"),otherLoanWrap=document.getElementById("otherLoanWrap"),otherLoanPurpose=document.getElementById("otherLoanPurpose"),primaryExclusion=document.getElementById("primaryExclusion"),purposeSections=[...document.querySelectorAll("[data-purpose-section]")],generalExperienceWrap=document.getElementById("generalExperienceWrap"),constructionExperienceWrap=document.getElementById("constructionExperienceWrap"),generalExperience=document.getElementById("generalExperience"),constructionExperience=document.getElementById("constructionExperience"),charCount=document.getElementById("charCount");
+    function applyLanguage(lang){currentLang=lang;document.documentElement.lang=lang;document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.dataset.i18n;if(translations[lang][k])el.textContent=translations[lang][k]});document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{const k=el.dataset.i18nPlaceholder;if(translations[lang][k])el.placeholder=translations[lang][k]});document.getElementById("langToggle").textContent=lang==="en"?"Español":"English"}
+    document.getElementById("langToggle").onclick=()=>applyLanguage(currentLang==="en"?"es":"en");
+    function updateProgress(){indicators.forEach((x,i)=>{const n=i+1;x.classList.toggle("active",n===currentPage);x.classList.toggle("complete",n<currentPage);x.querySelector(".step-number").textContent=n<currentPage?"✓":n})}
+    function goToPage(n){currentPage=n;pages.forEach(p=>p.classList.toggle("active",+p.dataset.page===n));updateProgress();errorSummary.classList.remove("visible");document.querySelector(".shell").scrollIntoView({behavior:"smooth",block:"start"})}
+    function validatePage(n){const page=document.querySelector(`[data-page="${n}"]`);page.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));let ok=true,handled=new Set();[...page.querySelectorAll("input,select,textarea")].filter(x=>!x.disabled&&x.required&&x.closest(".hidden")===null&&x.offsetParent!==null).forEach(x=>{if(x.type==="radio"||x.type==="checkbox"){if(handled.has(x.name))return;handled.add(x.name);const g=[...page.querySelectorAll(`[name="${x.name}"]`)].filter(y=>y.offsetParent!==null);if(!g.some(y=>y.checked)){ok=false;const w=g[0].closest(".choice-cards,.inline-options,.checkbox-grid");if(w)w.classList.add("invalid")}}else if(!x.checkValidity()){ok=false;x.classList.add("invalid")}});errorSummary.classList.toggle("visible",!ok);return ok}
+    document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>{const p=document.querySelector('input[name="primaryResidence"]:checked');if(currentPage===1&&p&&p.value==="yes")return;if(validatePage(currentPage))goToPage(+b.dataset.next)});document.querySelectorAll("[data-back]").forEach(b=>b.onclick=()=>goToPage(+b.dataset.back));
+    document.querySelectorAll('input[name="submitterRole"]').forEach(x=>x.onchange=()=>{const v=document.getElementById("roleBroker").checked;borrowerEntityWrap.classList.toggle("hidden",!v);borrowerEntity.required=v});propertyType.onchange=()=>{const v=propertyType.value==="other";otherPropertyWrap.classList.toggle("hidden",!v);otherPropertyType.required=v};
+    function updatePurpose(){const v=loanPurpose.value;otherLoanWrap.classList.toggle("hidden",v!=="other");otherLoanPurpose.required=v==="other";purposeSections.forEach(s=>{const a=s.dataset.purposeSection===v;s.classList.toggle("hidden",!a);s.querySelectorAll("[data-required-when-visible]").forEach(i=>i.required=a)});const c=v==="fix-flip"||v==="construction";generalExperienceWrap.classList.toggle("hidden",c);constructionExperienceWrap.classList.toggle("hidden",!c);generalExperience.required=!c;constructionExperience.required=c}loanPurpose.onchange=updatePurpose;
+    document.querySelectorAll('input[name="primaryResidence"]').forEach(x=>x.onchange=()=>{const blocked=document.getElementById("primaryYes").checked;primaryExclusion.classList.toggle("hidden",!blocked);document.querySelector('[data-page="1"] [data-next]').disabled=blocked});document.getElementById("additionalDetails").oninput=e=>charCount.textContent=`${e.target.value.length}/500`;
+    const issueBoxes=[...document.querySelectorAll('input[name="issues"]')];issueBoxes.forEach(b=>b.onchange=()=>{if(!b.checked)return;if(b.id==="issueNone"||b.id==="issueUnknown")issueBoxes.forEach(o=>{if(o!==b)o.checked=false});else{document.getElementById("issueNone").checked=false;document.getElementById("issueUnknown").checked=false}});
+    form.onsubmit=e=>{e.preventDefault();if(!validatePage(3))return;form.style.display="none";document.getElementById("progressWrap").style.display="none";document.getElementById("confirmation").classList.add("visible");document.querySelector(".shell").scrollIntoView({behavior:"smooth",block:"start"})};
+    document.getElementById("restartBtn").onclick=()=>{form.reset();form.style.display="";document.getElementById("progressWrap").style.display="";document.getElementById("confirmation").classList.remove("visible");borrowerEntityWrap.classList.add("hidden");otherPropertyWrap.classList.add("hidden");otherLoanWrap.classList.add("hidden");primaryExclusion.classList.add("hidden");purposeSections.forEach(s=>s.classList.add("hidden"));generalExperienceWrap.classList.remove("hidden");constructionExperienceWrap.classList.add("hidden");document.querySelector('[data-page="1"] [data-next]').disabled=false;charCount.textContent="0/500";goToPage(1)};updatePurpose();applyLanguage("en");
+  </script>
+</body>
+</html>
